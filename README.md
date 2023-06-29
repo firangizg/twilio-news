@@ -2,22 +2,23 @@
 
 This project is a Personalized News Bot that uses the NewsAPI to fetch the latest news based on keywords provided by the user via SMS. The Bot uses Twilio to receive and send SMS and is built using Flask.
 
-# Project Structure
+![Screenshot of messages exchanged](screenshot.jpg)
+## Project Structure
 
 The project contains the following files:
 1. news.py: This is the main application file. It contains the Flask application and all the logic for handling incoming messages, fetching news, and sending responses.
 2. .env: This file contains environment variables which include the Twilio Account SID, Auth Token, Phone Number and NewsAPI Key.
 3. requirements.txt: This file lists the Python dependencies that need to be installed for the project
 
-# Setup and Installation
+## Setup and Installation
 
-## Prerequisites
+### Prerequisites
 - Python 3.7 or later
 - A Twilio account with an active phone number
 - NewsAPI account
 - ngrok for local development
 
-# Steps to run the application
+## Steps to run the application
 1. Clone the repository to your local machine.
 2. Navigate to the project directory.
 3. Install the required dependencies. ```pip install -r requirements.txt```
