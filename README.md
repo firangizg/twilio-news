@@ -2,7 +2,8 @@
 
 This project is a Personalized News Bot that uses the NewsAPI to fetch the latest news based on keywords provided by the user via SMS. The Bot uses Twilio to receive and send SMS and is built using Flask.
 
-![Screenshot of messages exchanged](screenshot.jpg)
+<img src="screenshot.jpg" width="200" height="400" alt="Screenshot of messages exchanged">
+
 ## Project Structure
 
 The project contains the following files:
