@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
 import requests
-from twilio.rest import Client
 from flask import Flask, request
+from twilio.twiml.messaging_response import MessagingResponse
+from twilio.rest import Client
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,27 +14,47 @@ TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE = os.getenv("TWILIO_PHONE")
 NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
 
+app = Flask(__name__)
+
 def fetch_news(api_key, keywords):
-    url = 'https://newsapi.org/v2/everything?'  # Use the correct endpoint for your news API
+    url = 'https://newsapi.org/v2/everything?'  
     parameters = {
-        'q': keywords,  # search query
+        'q': keywords,  
         'apiKey': api_key,
     }
     response = requests.get(url, params=parameters)
     news = response.json()
-    # For simplicity, we'll just return the first news article's title and description
-    first_article = news['articles'][0]
-    return f"{first_article['title']}\n{first_article['description']}"
+    if 'articles' in news and len(news['articles']) > 0:
+        first_article = news['articles'][0]
+        return f"{first_article['title']}\n{first_article['description']}\n{first_article['url']}"
+    else:
+        return "No news found."
 
 def send_sms(news, account_sid, auth_token, twilio_number, user_number):
     client = Client(account_sid, auth_token)
     message = client.messages.create(
-        body=news,  # Text of the message
+        body=news,  
         from_=twilio_number,
         to=user_number
     )
-    return message.sid  # This is the ID of the message, useful for tracking
+    return message.sid  
+
+@app.route("/sms", methods=['POST'])
+def sms_reply():
+    """Respond to incoming calls with a simple text message."""
+    # Get the message the user sent our Twilio number
+    body = request.values.get('Body', None)
+
+    # Start our TwiML response
+    resp = MessagingResponse()
+
+    # Fetch news about the keyword the user texted
+    news = fetch_news(api_key=NEWSAPI_KEY, keywords=body)  
+
+    # Add a message to the response
+    resp.message(news)
+
+    return str(resp)
 
 if __name__ == "__main__":
-    news = fetch_news(api_key=NEWSAPI_KEY, keywords='artificial intelligence')  # Fetch news about AI
-    send_sms(news=news, account_sid=TWILIO_ACCOUNT_SID, auth_token=TWILIO_AUTH_TOKEN, twilio_number=TWILIO_PHONE, user_number='+17852264968')  
+    app.run(debug=True)
